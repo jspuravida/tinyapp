@@ -1,21 +1,16 @@
-<header> Welcome to my TinyAPP </header>
+<form method="POST" action="/logout" style="width:50px;">
+  <input id="username" type="button" name="usernameLoggedIn" input type="submit" value="Logout">
+</form>
 
 
-  <body style="font-size:20px; padding:50px;">
+<form method="POST" action="/login" style="width:50px;">
+  <input id="username" type="text" name="username" placeholder="Your username">
+  <input type="submit" value="Login">
+</form>
 
-  <% if (!username) { %>
-     <form method="POST" action="/login" style="width:50px;">
-      <input id="username" type="text" name="username" placeholder="Your username">
-      <input type="submit" value="Login">
-    </form>
-  <% } %>
 
-  <% if (username) { %>
-    <p>Hello (username)!</p>
-    <form method="POST" action="/logout" style="width:50px;">
-      <input id="username" type="text" name="usernameLoggedIn">
-      <input type="submit" value="Logout">
-    </form>
-  }
+<form method="GET" action="/register" style="width:50px;">
+  <input id="register" type="button" name="registerNewUser" input type="submit" value="Register">
+</form>
 
-  </body>
+

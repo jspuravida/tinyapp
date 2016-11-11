@@ -3,27 +3,14 @@
 <head>
   <title>TinyApp</title>
 </head>
-
-  <header><% include ../views/partials/_header %></header>
-
-    <body>
+  <body>
+    <header><% include ../views/partials/_header %></header>
       <h3> Your URL: Short and Long </h3>
       <p><%= shortURL %>-<%= fullURL %></p>
-
-
-
        <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
         <label for="updatedURL">Update Your URL:</label>
           <input id="updatedURL" type="text" name="updatedURL" placeholder="http://www.Your-New-Website-URL.com" style="width: 300px">
           <input type="submit" value="Change it!">
        </form>
-
-
-
-
-
-
-
     </body>
-
 </html>

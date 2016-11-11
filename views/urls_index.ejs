@@ -3,32 +3,24 @@
 <head>
   <title>TinyApp</title>
 </head>
-
-  <header>
-        <% include ../views/partials/_header %>
-  </header>
-
 <body style="font-size:17px; padding:40px;">
+  <header><% include ../views/partials/_header %></header>
+    <ul>
+      <% Object.keys(urls).forEach(function(key) { %>
+        <li>
+          <a href="<%= urls[key] %>"><%= key %></a>
+          will float you over to: <%= urls[key] %>
+          <form method="POST" action="/urls/<%= key %>/delete" style="width:50px;">
+            <input type="submit" value="Delete URL">
+          </form>
 
-<ul>
-  <% Object.keys(urls).forEach(function(key) { %>
-    <li>
-      <a href="<%= urls[key] %>"><%= key %></a>
-      will float you over to: <%= urls[key] %>
-      <form method="POST" action="/urls/<%= key %>/delete" style="width:50px;">
-        <input type="submit" value="Delete URL">
-      </form>
-
-      <form method="GET" action="/urls/<%=key %>" style="width:50px;">
-        <input type="submit" value="Edit">
-      </form>
-    </li>
-  <% }); %>
-</ul>
-
-<a href="">Shorten your URL here!</a>
-
+          <form method="GET" action="/urls/<%=key %>" style="width:50px;">
+            <input type="submit" value="Edit">
+          </form>
+        </li>
+      <% }); %>
+    </ul>
+  <a href="">Shorten your URL here!</a>
 </body>
-
 </html>
 

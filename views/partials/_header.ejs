@@ -1,16 +1,10 @@
+<% if (!email) { %>
+<a href="/login">Login here!</a>
+<a href="/register">Register!</a>
+<% } else { %>
+<p>Hello <%= email %> !</p>
 <form method="POST" action="/logout" style="width:50px;">
-  <input id="username" type="button" name="usernameLoggedIn" input type="submit" value="Logout">
+  <input id="username" type="submit" name="usernameLoggedIn" input type="submit" value="Logout">
 </form>
-
-
-<form method="POST" action="/login" style="width:50px;">
-  <input id="username" type="text" name="username" placeholder="Your username">
-  <input type="submit" value="Login">
-</form>
-
-
-<form method="GET" action="/register" style="width:50px;">
-  <input id="register" type="button" name="registerNewUser" input type="submit" value="Register">
-</form>
-
+<% } %>
 

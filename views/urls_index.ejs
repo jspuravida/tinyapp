@@ -21,8 +21,11 @@
           </li>
         <% }); %>
       </ul>
+    <% if email { %>
     <p><a href="/urls/new">Shorten your URL here!</a></p>
-
+    <% } if (!email) { %>
+    <% Login or sign up today to see some URL's! %>
+    <% } %>
   </main>
 </body>
 </html>

@@ -12,6 +12,8 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 app.set('trust proxy', 1);
 
+
+
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -20,7 +22,6 @@ var urlDatabase = {
 // middleware used here if to check if user has a session and lets info be available
 app.use((req, res, next) => {
   let userId = req.cookies['userId'];
-
   req.currentUser = users[userId];
   res.locals.email = '';
   if (req.currentUser) {

@@ -4,26 +4,26 @@
   <title>itty bitty tinyApp...y</title>
 </head>
 <body style="font-size:10px; padding:40px; background-color: #33ccff">
-<main>
-<h1>URLS</h1>
-  <header><% include ../views/partials/_header %></header></div>
-    <ul>
-      <% Object.keys(urls).forEach(function(key) { %>
-        <li>
-          <a href="<%= urls[key] %>"><%= key %></a>
-          will float you over to: <%= urls[key] %>
-          <form method="POST" action="/urls/<%= key %>/delete" style="width:50px;">
-            <input type="submit" value="Delete URL">
-          </form>
-          <form method="GET" action="/urls/<%= key %>" style="width:50px;">
-            <input type="submit" value="Edit">
-          </form>
-        </li>
-      <% }); %>
-    </ul>
-  <p><a href="">Shorten your URL here!</a></p>
+  <main>
+  <h1>URLS</h1>
+    <header><% include ../views/partials/_header %></header></div>
+      <ul>
+        <% Object.keys(urls).forEach(function(key) { %>
+          <li>
+            <a href="<%= urls[key] %>"><%= key %></a>
+            will float you over to: <%= urls[key] %>
+            <form method="POST" action="/urls/<%= key %>/delete" style="width:50px;">
+              <input type="submit" value="Delete URL">
+            </form>
+            <form method="GET" action="/urls/<%= key %>" style="width:50px;">
+              <input type="submit" value="Edit">
+            </form>
+          </li>
+        <% }); %>
+      </ul>
+    <p><a href="/urls/new">Shorten your URL here!</a></p>
 
-</main>
+  </main>
 </body>
 </html>
 

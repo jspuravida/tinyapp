@@ -3,8 +3,11 @@
 <a href="/register">Register!</a>
 <% } else { %>
 <p>Hello <%= email %> !</p>
+<a href="/urls">Show URLs</a>
+<br></br>
 <form method="POST" action="/logout" style="width:50px;">
   <input id="username" type="submit" name="usernameLoggedIn" input type="submit" value="Logout">
 </form>
+
 <% } %>
 

@@ -2,8 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const session = require('express-session');
 const bcrypt = require('bcrypt');
-// const cookieParser = require('cookie-parser');
-// Remokved cookieParser in order to switch to sessions.
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
@@ -14,15 +13,15 @@ app.set("view engine", "ejs");
 app.set('trust proxy', 1);
 
 
-// replacing with a master database for userId, email, password, short url, full urls.
-// var urlDatabase = {
+
+var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
 // middleware used here if to check if user has a session and lets info be available
 app.use((req, res, next) => {
-  req.session.userId;
+  let userId = req.cookies['userId'];
   req.currentUser = users[userId];
   res.locals.email = '';
   if (req.currentUser) {
@@ -36,26 +35,7 @@ app.get("/register", (req, res) => {
 });
 
 const users = {
-
-  {id: 's4f5j3'
-    [id: 's4f5j3',
-    email: 'testing@gmail.com',
-    password: '$2a$10$/AxxuxDhP04QdabvZ7MAQ.Pqdy6HCdPwrV6TDNNBw2P02OcyTfN7O',
-    shortURL: 'b2xVn2',
-    fullURL: 'http://www.lighthouselabs.ca/']
-  }
-
-  {id: 'l9p4j6'
-    [id: 'l9p4j6',
-    email: 'testing2@gmail.com',
-    password: '$1a$10$/AxxuxDhP04QdabvZ7MAQ.Pqdy6HCdPwrV6TDNNBw2P02OcyTfN7O',
-    shortURL: '4k4l5l',
-    fullURL: 'http://www.codecore.ca/']
-  }
 };
-// hardcoded new database objects for testing/review purposes.
-//
-// console.log(users);
 
 app.post("/register", (req, res) => {
   const email = req.body.email;
@@ -82,7 +62,7 @@ app.post("/register", (req, res) => {
   bcrypt.hash(password, saltRounds, function(err, hash) {
     const newUser = { id: userRandomID, email: email, password: hash };
     users[userRandomID] = newUser;
-    req.session.userId = 'userId';
+    res.cookie("userId", userRandomID);
     console.log(users);
     res.redirect("/");
   });
@@ -94,7 +74,7 @@ app.post("/login", (req, res) => {
   for (var userId in users) {
     if(users[userId].email === email) {
       if(bcrypt.compareSync(password, users[userId].password)) {
-        req.session.userId = 'userId';
+        res.cookie('userId', userId);
         res.redirect("/urls");
         return;
       }
@@ -169,7 +149,3 @@ function generateRandomString() {
   }
   return urlShortened;
 }
-
-
-
-

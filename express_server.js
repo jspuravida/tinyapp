@@ -33,7 +33,7 @@ var urlDatabase = {
 var users = {
   "Tom": {
     email: "tom@hotmail.com",
-    password: "test"}
+    password: "$2a$10$OkYi.6Nxoyhx7QkOXAI8ru29h3sSi2YQ5aXVDdXsl6OvSrmp40wLa"}
 };
 
 
@@ -75,21 +75,27 @@ app.post("/register", (req, res) => {
 
   const userRandomID = generateRandomString();
   const saltRounds = 10;
-  // bcrypt.hash(password, saltRounds, function(err, hash) {
-    const newUser = { id: userRandomID, email: email, password: password }; // put back 'hash' value replacing 'password'
+
+
+
+  bcrypt.hash(password, saltRounds, function(err, hash) {
+    const newUser = { id: userRandomID, email: email, password: hash }; // put back 'hash' value replacing 'password'
     users[userRandomID] = newUser;
-    res.cookie("userId", userRandomID);
+//    res.cookie("userId", userRandomID);
+    console.log(users);
+    req.session.email = email;   // adding a session to the new user
     res.redirect("/urls");
+
   });
-// });
+});
 
 app.post("/login", (req, res) => {
-var emailMatch;
-var passwordMatch;
-var userUniq;
+  var emailMatch;
+  var passwordMatch;
+  var userUniq;
 
-var email = req.body.loginEmail;
-var password = req.body.password;
+  var email = req.body.loginEmail;
+  var password = req.body.password;
 
   for (var userId in users) {
     if(users[userId].email === email) {
@@ -97,26 +103,28 @@ var password = req.body.password;
       passwordMatch = users[userId].password;
       userUniq = userId;
 
-      // if(bcrypt.compareSync(password, users[userId].password)) {
-      //   res.cookie('userId', userId);
-      //   res.redirect("urls_index");
-      //   return;
-      // }
-
-    }
-    if(password === passwordMatch) {
+    if(bcrypt.compareSync(password, users[userId].password)) {
       req.session.userSessId = userUniq;
       req.session.email = req.body.loginEmail;
       res.redirect('/urls');
-      console.log("Req session email", req.session.email);
+ //     console.log("Req session email", req.session.email);
       return;
     }
+
+    }
+    // if(password === passwordMatch) {
+    //   req.session.userSessId = userUniq;
+    //   req.session.email = req.body.loginEmail;
+    //   res.redirect('/urls');
+    //   console.log("Req session email", req.session.email);
+    //   return;
+    // }
   }
   res.status(400).send("Invalid login");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("userId");
+  req.session = null;
   res.redirect("/login");
 });
 
@@ -146,6 +154,9 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let fullURL = req.body.fullURL;
   console.log("urls FULL", fullURL);
+  if(!fullURL.startsWith('http')) {
+    fullURL = 'http://' + fullURL;
+  }
   urlDatabase[shortURL] = {
     email: email,
     full: fullURL
@@ -159,7 +170,7 @@ app.post("/urls", (req, res) => {
 // Grab the short url and add it to the urlDatabase
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", { email: req.session.email });
 });
 
 app.get("/urls/:id", (req, res) => {

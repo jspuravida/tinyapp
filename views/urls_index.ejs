@@ -9,15 +9,10 @@
     <header><% include ../views/partials/_header %></header></div>
       <ul>
         <% Object.keys(urls).forEach(function(key) { %>
-
         <% if(urls[key].email === email) { %>
           <li>
-
             <a href="<%= urls[key].full %>"><%= key %></a>
-
             will float you over to: <%= urls[key].full %>
-
-
             <form method="POST" action="/urls/<%= key %>/delete" style="width:50px;">
               <input type="submit" value="Delete URL">
             </form>
@@ -28,7 +23,6 @@
         <% }}); %>
       </ul>
     <p><a href="/urls/new">Shorten your URL here!</a></p>
-
   </main>
 </body>
 </html>

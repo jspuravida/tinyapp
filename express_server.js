@@ -6,6 +6,9 @@ const cookieParser  = require('cookie-parser');
 const app           = express();
 const PORT          = process.env.PORT || 8080; // default port 8080
 const cookieSession = require('cookie-session');
+const userRandomID = generateRandomString();
+const saltRounds = 10;
+
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -16,7 +19,6 @@ app.use(cookieSession({
   name:'session',
   keys: ['lighthouse', 'lighthouse1'],
 }))
-
 
 var urlDatabase = {
   "b2xVn2": {
@@ -35,8 +37,6 @@ var users = {
     email: "tom@hotmail.com",
     password: "$2a$10$OkYi.6Nxoyhx7QkOXAI8ru29h3sSi2YQ5aXVDdXsl6OvSrmp40wLa"}
 };
-
-
 // middleware used here if to check if user has a session and lets info be available
 app.use((req, res, next) => {
   let userId = req.cookies['userId'];
@@ -52,13 +52,11 @@ app.get("/register", (req, res) => {
   res.render("registration");
 });
 
-
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-
   if(email === "" || password === "" ) {
-    res.send("Error: 400");
+    res.render('400');
     return;
   } else {
     var foundEmail = false;
@@ -68,24 +66,17 @@ app.post("/register", (req, res) => {
       }
     });
     if (foundEmail) {
-      res.send("Error: 400");
+    res.render('400');
       return;
     }
   }
 
-  const userRandomID = generateRandomString();
-  const saltRounds = 10;
-
-
-
   bcrypt.hash(password, saltRounds, function(err, hash) {
-    const newUser = { id: userRandomID, email: email, password: hash }; // put back 'hash' value replacing 'password'
+    const newUser = { id: userRandomID, email: email, password: hash };
     users[userRandomID] = newUser;
-//    res.cookie("userId", userRandomID);
     console.log(users);
     req.session.email = email;   // adding a session to the new user
     res.redirect("/urls");
-
   });
 });
 
@@ -93,7 +84,6 @@ app.post("/login", (req, res) => {
   var emailMatch;
   var passwordMatch;
   var userUniq;
-
   var email = req.body.loginEmail;
   var password = req.body.password;
 
@@ -107,18 +97,9 @@ app.post("/login", (req, res) => {
       req.session.userSessId = userUniq;
       req.session.email = req.body.loginEmail;
       res.redirect('/urls');
- //     console.log("Req session email", req.session.email);
       return;
     }
-
     }
-    // if(password === passwordMatch) {
-    //   req.session.userSessId = userUniq;
-    //   req.session.email = req.body.loginEmail;
-    //   res.redirect('/urls');
-    //   console.log("Req session email", req.session.email);
-    //   return;
-    // }
   }
   res.status(400).send("Invalid login");
 });
@@ -137,12 +118,15 @@ app.get("/urls", (req, res) => {
     email: req.session.email,
     urls: urlDatabase
   }
+  if(!req.session.email) {
+    res.render('401');
+    console.log("did this work?")
+  } else
   res.render("urls_index", templateVars);
 });
 
 app.get("/", (req, res) => {
   res.redirect("/login");
-
 });
 
 app.get("/urls.json", (req, res) => {
@@ -163,13 +147,13 @@ app.post("/urls", (req, res) => {
   };
   console.log(urlDatabase);
   res.redirect('/urls');
-
-
 });
-
 // Grab the short url and add it to the urlDatabase
 
 app.get("/urls/new", (req, res) => {
+  if(!req.session.email) {
+    res.render("401")
+  } else
   res.render("urls_new", { email: req.session.email });
 });
 
@@ -181,7 +165,6 @@ app.get("/urls/:id", (req, res) => {
     urls: urlDatabase,
     paramId: req.params.id,
   };
-
   res.render("urls_show", templateVars);
 });
 
@@ -206,4 +189,4 @@ function generateRandomString() {
     urlShortened += list.charAt(Math.floor(Math.random() * list.length)); //randomly outputs a character from the list and stores in urlShortened
   }
   return urlShortened;
-}
+};

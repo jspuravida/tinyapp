@@ -23,12 +23,12 @@ app.use(cookieSession({
 var urlDatabase = {
   "b2xVn2": {
     email: "tom@hotmail.com",
-    full: "www.lighthouselabs.ca"
+    full: "http://www.lighthouselabs.ca"
   },
 
   "9sm5xK": {
     email: "tom@hotmail.com",
-    full: "www.nhl.com"
+    full: "http://www.nhl.com"
   }
 };
 
@@ -39,6 +39,9 @@ var users = {
 };
 // middleware used here if to check if user has a session and lets info be available
 app.use((req, res, next) => {
+  console.dir(`user ${req.session.userid} sent a ${req.method} request for ${req.url}`, {
+   colors: true
+ });
   let userId = req.cookies['userId'];
   req.currentUser = users[userId];
   res.locals.email = '';
@@ -120,13 +123,16 @@ app.get("/urls", (req, res) => {
   }
   if(!req.session.email) {
     res.render('401');
-    console.log("did this work?")
   } else
   res.render("urls_index", templateVars);
 });
 
 app.get("/", (req, res) => {
+  if(req.session.email) {
+    res.redirect("/urls")
+  } else {
   res.redirect("/login");
+}
 });
 
 app.get("/urls.json", (req, res) => {
@@ -137,7 +143,6 @@ app.post("/urls", (req, res) => {
   var email = req.session.email;
   let shortURL = generateRandomString();
   let fullURL = req.body.fullURL;
-  console.log("urls FULL", fullURL);
   if(!fullURL.startsWith('http')) {
     fullURL = 'http://' + fullURL;
   }
@@ -145,10 +150,22 @@ app.post("/urls", (req, res) => {
     email: email,
     full: fullURL
   };
-  console.log(urlDatabase);
   res.redirect('/urls');
 });
 // Grab the short url and add it to the urlDatabase
+
+app.get("/u/:id", (req, res) => {
+//req.params.id is whatever is typed in for :id, then the if statement checks if this is in the database. If so, redirect to the longURL. Else, render the 404.
+  let shortURL = req.params.id;
+  if (urlDatabase[shortURL]) {
+    let longURL = urlDatabase[shortURL].full;
+    res.redirect(longURL);
+  }
+  else {
+    res.render('404');
+  }
+  return;
+});
 
 app.get("/urls/new", (req, res) => {
   if(!req.session.email) {
@@ -161,10 +178,20 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     fullURL: urlDatabase[req.params.id],
-    email: req.session["email"],
+    email: req.session.email,
     urls: urlDatabase,
     paramId: req.params.id,
   };
+  let loggedUser = req.session.email;
+  let enteredID = req.params.id;
+
+  if(!urlDatabase[req.params.id]) {
+    res.render("404");
+    return;
+  } else if (loggedUser != urlDatabase[enteredID].email) {
+    res.render("403");
+    return;
+  }
   res.render("urls_show", templateVars);
 });
 
@@ -172,6 +199,7 @@ app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
+
 
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.updatedURL;
